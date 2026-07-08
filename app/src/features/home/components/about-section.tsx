@@ -25,12 +25,12 @@ function AboutSection(): React.JSX.Element {
       component="section"
       id="about"
       sx={{
-        py: { xs: 10, md: 16 },
+        py: { xs: 6, sm: 8, md: 16 },
         position: "relative",
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={8} alignItems="center">
+        <Grid container spacing={{ xs: 4, sm: 5, md: 8 }} alignItems="center">
           {/* --- Image Placeholder with Parallax --- */}
           <Grid size={{ xs: 12, md: 5 }}>
             <ScrollReveal direction="left" duration={0.7}>
@@ -40,7 +40,8 @@ function AboutSection(): React.JSX.Element {
                     position: "relative",
                     borderRadius: 4,
                     overflow: "hidden",
-                    aspectRatio: "3/4",
+                    aspectRatio: { xs: "4/3", sm: "1/1", md: "3/4" },
+                    maxHeight: { xs: 250, sm: 320, md: "none" },
                     background: (theme) =>
                       theme.palette.mode === "dark"
                         ? "linear-gradient(135deg, rgba(183, 110, 121, 0.2) 0%, rgba(114, 47, 55, 0.1) 100%)"
@@ -55,7 +56,7 @@ function AboutSection(): React.JSX.Element {
                   <Typography
                     variant="h2"
                     sx={{
-                      fontSize: { xs: "4rem", md: "6rem" },
+                      fontSize: { xs: "3rem", sm: "4rem", md: "6rem" },
                       color: "primary.main",
                       opacity: 0.3,
                       fontStyle: "italic",

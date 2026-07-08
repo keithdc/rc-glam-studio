@@ -45,7 +45,16 @@ function ContactSection(): React.JSX.Element {
     phone: "",
     message: "",
   });
+  const [honeypot, setHoneypot] = useState("");
   const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [snackSeverity, setSnackSeverity] = useState<"success" | "warning">(
+    "success",
+  );
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const COOLDOWN_MS = 30000; // 30 seconds between submissions
 
   const handleChange =
     (field: string) =>
@@ -55,8 +64,43 @@ function ContactSection(): React.JSX.Element {
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
-    setSnackOpen(true);
-    setFormData({ name: "", email: "", phone: "", message: "" });
+
+    // --- Spam Guard: Honeypot check (bots fill hidden fields) ---
+    if (honeypot !== "") {
+      // Silently reject — don't reveal detection to the bot
+      setFormData({ name: "", email: "", phone: "", message: "" });
+      setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
+      setSnackSeverity("success");
+      setSnackOpen(true);
+      return;
+    }
+
+    // --- Spam Guard: Cooldown check ---
+    const now = Date.now();
+    if (now - lastSubmitTime < COOLDOWN_MS) {
+      const secondsLeft = Math.ceil(
+        (COOLDOWN_MS - (now - lastSubmitTime)) / 1000,
+      );
+      setSnackMessage(
+        `Please wait ${String(secondsLeft)} seconds before sending another message.`,
+      );
+      setSnackSeverity("warning");
+      setSnackOpen(true);
+      return;
+    }
+
+    // --- Valid submission ---
+    setIsSubmitting(true);
+    setLastSubmitTime(now);
+
+    // Simulate sending (replace with real API call later)
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
+      setSnackSeverity("success");
+      setSnackOpen(true);
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    }, 800);
   };
 
   return (
@@ -64,7 +108,7 @@ function ContactSection(): React.JSX.Element {
       component="section"
       id="contact"
       sx={{
-        py: { xs: 10, md: 16 },
+        py: { xs: 6, sm: 8, md: 16 },
         position: "relative",
       }}
     >
@@ -87,7 +131,7 @@ function ContactSection(): React.JSX.Element {
 
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         {/* --- Section Header --- */}
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+        <Box sx={{ textAlign: "center", mb: { xs: 4, sm: 5, md: 8 } }}>
           <ScrollReveal direction="up">
             <Typography
               variant="overline"
@@ -122,7 +166,7 @@ function ContactSection(): React.JSX.Element {
           </ScrollReveal>
         </Box>
 
-        <Grid container spacing={6}>
+        <Grid container spacing={{ xs: 4, md: 6 }}>
           {/* --- Contact Form with BorderBeam --- */}
           <Grid size={{ xs: 12, md: 7 }}>
             <ScrollReveal direction="left" delay={0.2}>
@@ -131,7 +175,7 @@ function ContactSection(): React.JSX.Element {
                 onSubmit={handleSubmit}
                 sx={{
                   position: "relative",
-                  p: 4,
+                  p: { xs: 2.5, sm: 3, md: 4 },
                   borderRadius: 3,
                   bgcolor: "background.paper",
                   backdropFilter: "blur(10px)",
@@ -221,16 +265,37 @@ function ContactSection(): React.JSX.Element {
                       }}
                     />
                   </Grid>
+                  {/* --- Honeypot: Hidden field to catch bots --- */}
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Website"
+                      value={honeypot}
+                      onChange={(e) => {
+                        setHoneypot(e.target.value);
+                      }}
+                      autoComplete="off"
+                      tabIndex={-1}
+                      sx={{
+                        position: "absolute",
+                        left: "-9999px",
+                        opacity: 0,
+                        height: 0,
+                        overflow: "hidden",
+                      }}
+                    />
+                  </Grid>
                   <Grid size={{ xs: 12 }}>
                     <Button
                       type="submit"
                       variant="contained"
                       color="primary"
                       size="large"
+                      disabled={isSubmitting}
                       endIcon={<SendIcon />}
                       sx={{ mt: 1 }}
                     >
-                      Send Message
+                      {isSubmitting ? "Sending..." : "Send Message"}
                     </Button>
                   </Grid>
                 </Grid>
@@ -357,7 +422,7 @@ function ContactSection(): React.JSX.Element {
         </Grid>
       </Container>
 
-      {/* --- Success Snackbar --- */}
+      {/* --- Feedback Snackbar --- */}
       <Snackbar
         open={snackOpen}
         autoHideDuration={5000}
@@ -370,11 +435,14 @@ function ContactSection(): React.JSX.Element {
           onClose={() => {
             setSnackOpen(false);
           }}
-          severity="success"
+          severity={snackSeverity}
           variant="filled"
-          sx={{ backgroundColor: "primary.main" }}
+          sx={{
+            backgroundColor:
+              snackSeverity === "success" ? "primary.main" : undefined,
+          }}
         >
-          Message sent! I&apos;ll get back to you within 24 hours. 💄
+          {snackMessage}
         </Alert>
       </Snackbar>
     </Box>

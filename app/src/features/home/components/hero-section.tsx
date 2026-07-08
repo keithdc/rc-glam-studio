@@ -55,10 +55,10 @@ function HeroSection(): React.JSX.Element {
         {/* --- Logo with BlurFade --- */}
         <BlurFade delay={0.2} inView>
           <Logo
-            height={{ xs: 120, md: 160 }}
+            height={{ xs: 90, md: 160 }}
             sx={{
               mx: "auto",
-              mb: 4,
+              mb: { xs: 2, md: 4 },
               display: "block",
               filter: isDark
                 ? "drop-shadow(0 0 40px rgba(183, 110, 121, 0.4))"
@@ -72,9 +72,9 @@ function HeroSection(): React.JSX.Element {
           <Typography
             variant="h1"
             sx={{
-              fontSize: { xs: "2.5rem", md: "4.5rem" },
+              fontSize: { xs: "2rem", md: "4.5rem" },
               color: "text.primary",
-              mb: 2,
+              mb: { xs: 1.5, md: 2 },
             }}
           >
             Elevate Your Beauty
@@ -86,11 +86,11 @@ function HeroSection(): React.JSX.Element {
           <Typography
             variant="body1"
             sx={{
-              fontSize: { xs: "1rem", md: "1.25rem" },
+              fontSize: { xs: "0.9rem", md: "1.25rem" },
               color: "text.secondary",
               maxWidth: 600,
               mx: "auto",
-              mb: 5,
+              mb: { xs: 3, md: 5 },
             }}
           >
             Professional makeup artistry for your most important moments.

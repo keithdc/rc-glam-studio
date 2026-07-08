@@ -20,7 +20,7 @@ interface ColorModeContextValue {
 }
 
 const ColorModeContext = createContext<ColorModeContextValue>({
-  mode: "dark",
+  mode: "light",
   toggleColorMode: () => {},
 });
 
@@ -35,7 +35,7 @@ function ColorModeProvider({
   const [mode, setMode] = useState<ColorMode>(() => {
     const stored = localStorage.getItem("rc-glam-color-mode");
     if (stored === "light" || stored === "dark") return stored;
-    return "dark";
+    return "light";
   });
 
   const toggleColorMode = useCallback((): void => {

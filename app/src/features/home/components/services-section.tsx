@@ -69,7 +69,7 @@ function ServicesSection(): React.JSX.Element {
       component="section"
       id="services"
       sx={{
-        py: { xs: 10, md: 16 },
+        py: { xs: 6, sm: 8, md: 16 },
         background: (theme) =>
           theme.palette.mode === "dark"
             ? "linear-gradient(180deg, transparent 0%, rgba(183, 110, 121, 0.03) 50%, transparent 100%)"
@@ -78,7 +78,7 @@ function ServicesSection(): React.JSX.Element {
     >
       <Container maxWidth="lg">
         {/* --- Section Header --- */}
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+        <Box sx={{ textAlign: "center", mb: { xs: 4, sm: 5, md: 8 } }}>
           <ScrollReveal direction="up">
             <Typography
               variant="overline"
@@ -105,7 +105,7 @@ function ServicesSection(): React.JSX.Element {
         </Box>
 
         {/* --- Service Cards with scroll-reveal stagger --- */}
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           {SERVICES.map((service, index) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={service.title}>
               <ScrollReveal
@@ -138,18 +138,20 @@ function ServicesSection(): React.JSX.Element {
                     colorTo="#D4A0A7"
                     delay={index * 2}
                   />
-                  <CardContent sx={{ p: 4, textAlign: "center" }}>
+                  <CardContent
+                    sx={{ p: { xs: 2.5, sm: 3, md: 4 }, textAlign: "center" }}
+                  >
                     <Box
                       sx={{
-                        width: 60,
-                        height: 60,
+                        width: { xs: 48, md: 60 },
+                        height: { xs: 48, md: 60 },
                         borderRadius: "50%",
                         backgroundColor: "rgba(183, 110, 121, 0.1)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         mx: "auto",
-                        mb: 3,
+                        mb: { xs: 2, md: 3 },
                       }}
                     >
                       <service.icon

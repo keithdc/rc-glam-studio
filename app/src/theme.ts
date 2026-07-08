@@ -95,8 +95,12 @@ function getTheme(mode: PaletteMode) {
         styleOverrides: {
           root: {
             borderRadius: 30,
-            padding: "12px 32px",
-            fontSize: "0.95rem",
+            padding: "10px 24px",
+            fontSize: "0.9rem",
+            "@media (min-width: 600px)": {
+              padding: "12px 32px",
+              fontSize: "0.95rem",
+            },
           },
           contained: {
             boxShadow: "0 4px 20px rgba(183, 110, 121, 0.3)",

@@ -50,10 +50,14 @@ function GallerySection(): React.JSX.Element {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Box component="section" id="portfolio" sx={{ py: { xs: 10, md: 16 } }}>
+    <Box
+      component="section"
+      id="portfolio"
+      sx={{ py: { xs: 6, sm: 8, md: 16 } }}
+    >
       <Container maxWidth="lg">
         {/* --- Section Header --- */}
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+        <Box sx={{ textAlign: "center", mb: { xs: 4, sm: 5, md: 8 } }}>
           <ScrollReveal direction="up">
             <Typography
               variant="overline"
@@ -89,7 +93,7 @@ function GallerySection(): React.JSX.Element {
                 sm: "repeat(2, 1fr)",
                 md: "repeat(4, 1fr)",
               },
-              gridAutoRows: { xs: 180, sm: 180, md: 200 },
+              gridAutoRows: { xs: 180, sm: 160, md: 200 },
               gap: { xs: 1.5, md: 1.5 },
             }}
           >

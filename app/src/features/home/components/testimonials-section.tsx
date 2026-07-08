@@ -83,7 +83,9 @@ function TestimonialCard({
 }): React.JSX.Element {
   return (
     <Card
-      className={cn("min-w-[320px] max-w-[380px] flex-shrink-0")}
+      className={cn(
+        "min-w-[280px] max-w-[340px] flex-shrink-0 sm:min-w-[320px] sm:max-w-[380px]",
+      )}
       sx={{
         backgroundColor: "background.paper",
         backdropFilter: "blur(10px)",
@@ -139,11 +141,11 @@ function TestimonialsSection(): React.JSX.Element {
       component="section"
       id="testimonials"
       sx={{
-        py: { xs: 10, md: 16 },
+        py: { xs: 6, sm: 8, md: 16 },
         overflow: "hidden",
       }}
     >
-      <Container maxWidth="lg" sx={{ mb: 6 }}>
+      <Container maxWidth="lg" sx={{ mb: { xs: 3, md: 6 } }}>
         <Box sx={{ textAlign: "center" }}>
           <ScrollReveal direction="up">
             <Typography
