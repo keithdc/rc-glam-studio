@@ -3,7 +3,8 @@
  * @feature home
  * @dependencies @mui/material, magicui components
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Container,
@@ -14,6 +15,7 @@ import {
   Snackbar,
   Alert,
   IconButton,
+  MenuItem,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import EmailIcon from "@mui/icons-material/Email";
@@ -39,10 +41,12 @@ const CONTACT_INFO = [
 
 /** Contact section with form, MagicUI BorderBeam, and studio information. */
 function ContactSection(): React.JSX.Element {
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
+    service: "",
     message: "",
   });
   const [honeypot, setHoneypot] = useState("");
@@ -53,6 +57,19 @@ function ContactSection(): React.JSX.Element {
   );
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Pre-select service tier when clicking "Book Bloom/Luxe/Prestige"
+  useEffect(() => {
+    const hash = location.hash.replace("#contact-", "");
+    if (["bloom", "luxe", "prestige"].includes(hash)) {
+      const tierMap: Record<string, string> = {
+        bloom: "Bloom — Everyday Glow (₱1,500/head)",
+        luxe: "Luxe — Event Ready (₱3,500/head)",
+        prestige: "Prestige — Bridal Luxury (₱8,000)",
+      };
+      setFormData((prev) => ({ ...prev, service: tierMap[hash] ?? "" }));
+    }
+  }, [location.hash]);
 
   const COOLDOWN_MS = 30000; // 30 seconds between submissions
 
@@ -68,7 +85,7 @@ function ContactSection(): React.JSX.Element {
     // --- Spam Guard: Honeypot check (bots fill hidden fields) ---
     if (honeypot !== "") {
       // Silently reject — don't reveal detection to the bot
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
       setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
       setSnackSeverity("success");
       setSnackOpen(true);
@@ -99,7 +116,7 @@ function ContactSection(): React.JSX.Element {
       setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
       setSnackSeverity("success");
       setSnackOpen(true);
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
     }, 800);
   };
 
@@ -244,6 +261,37 @@ function ContactSection(): React.JSX.Element {
                         },
                       }}
                     />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="Service Package"
+                      value={formData.service}
+                      onChange={handleChange("service")}
+                      variant="outlined"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "rgba(183, 110, 121, 0.3)",
+                          },
+                          "&:hover fieldset": { borderColor: "primary.main" },
+                        },
+                      }}
+                    >
+                      <MenuItem value="">
+                        <em>Select a package (optional)</em>
+                      </MenuItem>
+                      <MenuItem value="Bloom — Everyday Glow (₱1,500/head)">
+                        Bloom — Everyday Glow (₱1,500/head)
+                      </MenuItem>
+                      <MenuItem value="Luxe — Event Ready (₱3,500/head)">
+                        Luxe — Event Ready (₱3,500/head)
+                      </MenuItem>
+                      <MenuItem value="Prestige — Bridal Luxury (₱8,000)">
+                        Prestige — Bridal Luxury (₱8,000)
+                      </MenuItem>
+                    </TextField>
                   </Grid>
                   <Grid size={{ xs: 12 }}>
                     <TextField

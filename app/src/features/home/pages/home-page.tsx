@@ -10,6 +10,7 @@ import Navbar from "../components/navbar";
 import HeroSection from "../components/hero-section";
 import AboutSection from "../components/about-section";
 import ServicesSection from "../components/services-section";
+import PricingSection from "../components/pricing-section";
 import GallerySection from "../components/gallery-section";
 import TestimonialsSection from "../components/testimonials-section";
 import ContactSection from "../components/contact-section";
@@ -22,7 +23,11 @@ function HomePage(): React.JSX.Element {
   // Scroll to the correct section when navigating back with a hash (e.g. /#portfolio)
   useEffect(() => {
     if (location.hash) {
-      const el = document.querySelector(location.hash);
+      // Handle #contact-bloom, #contact-luxe, #contact-prestige → scroll to #contact
+      const targetId = location.hash.startsWith("#contact-")
+        ? "#contact"
+        : location.hash;
+      const el = document.querySelector(targetId);
       if (el) {
         setTimeout(() => {
           el.scrollIntoView({ behavior: "smooth" });
@@ -43,6 +48,7 @@ function HomePage(): React.JSX.Element {
       <HeroSection />
       <AboutSection />
       <ServicesSection />
+      <PricingSection />
       <GallerySection />
       <TestimonialsSection />
       <ContactSection />
