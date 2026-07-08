@@ -1,13 +1,39 @@
 /**
- * @file App.tsx — Root application component with providers
+ * @file App.tsx — Root application component with providers and routing
  * @shared
- * @dependencies @mui/material, theme, color-mode context
+ * @dependencies @mui/material, react-router-dom, theme, color-mode context
  */
-import { useMemo } from "react";
-import { ThemeProvider, CssBaseline } from "@mui/material";
+import { useMemo, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  ThemeProvider,
+  CssBaseline,
+  CircularProgress,
+  Box,
+} from "@mui/material";
 import getTheme from "./theme";
 import { ColorModeProvider, useColorMode } from "./shared/hooks/use-color-mode";
-import HomePage from "./features/home/pages/home-page";
+
+const HomePage = lazy(() => import("./features/home/pages/home-page"));
+const PortfolioPage = lazy(
+  () => import("./features/portfolio/pages/portfolio-page"),
+);
+
+/** Loading fallback for lazy routes. */
+function PageLoader(): React.JSX.Element {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <CircularProgress color="primary" />
+    </Box>
+  );
+}
 
 /** Inner component that consumes color mode and applies the correct theme. */
 function AppContent(): React.JSX.Element {
@@ -17,7 +43,14 @@ function AppContent(): React.JSX.Element {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <HomePage />
+      <BrowserRouter>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

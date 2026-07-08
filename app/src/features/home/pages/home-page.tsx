@@ -3,6 +3,8 @@
  * @feature home
  * @dependencies All section components
  */
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
 import Navbar from "../components/navbar";
 import HeroSection from "../components/hero-section";
@@ -15,6 +17,20 @@ import Footer from "../components/footer";
 
 /** Full single-page portfolio layout with all sections. */
 function HomePage(): React.JSX.Element {
+  const location = useLocation();
+
+  // Scroll to the correct section when navigating back with a hash (e.g. /#portfolio)
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.querySelector(location.hash);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+  }, [location.hash]);
+
   return (
     <Box
       sx={{
