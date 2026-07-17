@@ -1,0 +1,92 @@
+---
+description: RC Glam Studio coding standards — always follow when writing or modifying code
+alwaysApply: true
+---
+
+# RC Glam Studio — Coding Standards
+
+Frontend-only React marketing/portfolio site. All code lives in `app/`. **No backend, API, or database.**
+
+Full reference: `.kiro/steering/coding-standards.md`
+
+## Tech Stack
+
+React 18 · TypeScript · Vite · MUI + Tailwind · Framer Motion · MagicUI · react-router-dom
+
+## Architecture
+
+```
+app/src/
+├── App.tsx              ← providers, theme, lazy-loaded routes
+├── theme.ts             ← MUI light/dark theme
+├── components/magicui/  ← animated UI primitives
+├── features/[feature]/  ← components/, pages/
+├── lib/utils.ts         ← cn() and pure utilities
+└── shared/              ← components/, hooks/
+```
+
+- Features are self-contained; import across features only via `shared/` or barrel exports.
+- New feature flow: components → page → lazy route in `App.tsx`.
+- Static content stays within the feature folder.
+
+## TypeScript
+
+- Strict mode; never use `any`. Prefer `unknown` when truly unknown.
+- Explicit return types on all functions.
+- `interface` for objects, `type` for unions.
+- `import type { Foo } from "./foo"` for type-only imports.
+- Remove unused imports immediately.
+
+## Naming
+
+| Item | Convention | Example |
+|------|------------|---------|
+| Files | kebab-case | `hero-section.tsx` |
+| Components | PascalCase | `HeroSection` |
+| Hooks/functions | camelCase | `useColorMode` |
+| Constants | SCREAMING_SNAKE | `MAX_GALLERY_ITEMS` |
+
+## React & UI
+
+- Functional components only; prop interfaces above the component.
+- Extract hooks when a component exceeds ~50 lines.
+- MUI for structural UI; Tailwind via `cn()`; MagicUI for animations.
+- Use MUI theme tokens — never hardcode colors (`grey.50`, `#f8fafc`).
+- CSS variables for custom UI: `var(--background)`, `var(--foreground)`, `var(--border)`.
+- Dark mode: `.dark` on `<html>` via `ColorModeProvider`.
+- Loading states, empty states, responsive layout (desktop-first).
+- Forms: labels, validation, disabled submit states.
+
+## File Annotations
+
+Every file starts with:
+
+```ts
+/**
+ * @file [filename] — [purpose]
+ * @feature [name] | @shared
+ * @dependencies [non-obvious imports]
+ */
+```
+
+One-line JSDoc on exported functions/components. `// TODO(author): description` only.
+
+## ESLint Patterns (when configured)
+
+```tsx
+// ❌ onClick={() => setOpen(true)}
+// ✅ onClick={() => { setOpen(true); }}
+
+// ❌ primaryTypographyProps={{ variant: "body2" }}
+// ✅ slotProps={{ primary: { variant: "body2" } }}
+```
+
+## Commands
+
+```bash
+npm run dev      # http://localhost:5173
+npm run build
+npm run format
+```
+
+Run from repo root or `app/`.

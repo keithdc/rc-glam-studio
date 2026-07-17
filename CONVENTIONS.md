@@ -1,109 +1,111 @@
 # Coding Standards & AI Guardrails
 
-This document governs how all code in this monorepo should be written. Follow these rules strictly.
+Summary of project conventions for RC Glam Studio.
+
+- **Cursor rules (auto-loaded every prompt):** [`.cursor/rules/rc-glam-studio-standards.mdc`](.cursor/rules/rc-glam-studio-standards.mdc)
+- **Full reference:** [`.kiro/steering/coding-standards.md`](.kiro/steering/coding-standards.md)
 
 ## General Principles
 
 - Write readable, maintainable, and reusable code.
 - Prefer small, focused functions over large monolithic ones.
-- DRY (Don't Repeat Yourself) — extract shared logic into `shared/` folders.
-- KISS (Keep It Simple) — avoid over-engineering.
+- DRY — extract shared logic into `shared/`.
+- KISS — avoid over-engineering.
 - Every file should have a single responsibility.
+
+## Tech Stack
+
+- React 18, TypeScript, Vite
+- MUI for components/theme; Tailwind CSS for utilities
+- Framer Motion + MagicUI components for animations
+- react-router-dom for routing
+
+This is a **frontend-only** site — no backend, database, or API.
 
 ## TypeScript Rules
 
-- **Strict mode is mandatory.** Never use `any` — define proper types/interfaces.
+- Strict mode is mandatory. Never use `any`.
 - Always declare explicit return types on functions.
 - Use `interface` for object shapes, `type` for unions/intersections.
-- Use `type` imports: `import type { Foo } from "./foo"`.
-- No non-null assertions (`!`) unless absolutely necessary with a comment explaining why.
+- Use `import type { Foo } from "./foo"` for type-only imports.
 - Prefer `unknown` over `any` when the type is truly unknown.
 
 ## Project Architecture
 
-### Frontend (`app/`)
-
 ```
 app/src/
-├── features/           ← Feature modules (one per domain)
-│   └── [feature]/
-│       ├── components/ ← UI components specific to this feature
-│       ├── pages/      ← Route-level page components
-│       ├── services/   ← API calls for this feature
-│       ├── models/     ← TypeScript interfaces/types
-│       ├── hooks/      ← Custom React hooks for this feature
-│       └── index.ts    ← Public exports (barrel file)
-├── shared/             ← Cross-feature reusable code
-│   ├── components/     ← Reusable UI components
-│   ├── hooks/          ← Reusable React hooks
-│   ├── services/       ← Shared services (api-client, auth, etc.)
-│   └── utils/          ← Pure utility functions
-└── theme.ts            ← MUI theme configuration
-```
-
-### Backend (`api/`)
-
-```
-api/src/
-├── features/           ← Feature modules (one per domain)
-│   └── [feature]/
-│       ├── [feature].routes.ts   ← Express route definitions
-│       ├── [feature].service.ts  ← Business logic
-│       ├── [feature].model.ts    ← Type definitions
-│       └── [feature].schema.ts   ← Validation schemas (optional)
-├── shared/
-│   └── middleware/     ← Reusable Express middleware
-├── db.ts               ← Database connection pool
-└── index.ts            ← Server entry point
+├── App.tsx             ← Providers, theme, and routes
+├── theme.ts            ← MUI theme (light + dark)
+├── components/magicui/ ← Animated UI primitives
+├── features/[feature]/
+│   ├── components/
+│   └── pages/
+├── lib/utils.ts        ← Shared utilities (cn())
+└── shared/
+    ├── components/
+    └── hooks/
 ```
 
 ## Feature Module Rules
 
-1. Each feature is self-contained in its own folder.
-2. Features expose their public API through an `index.ts` barrel file.
-3. Features should NOT import directly from other features' internal files — only from their `index.ts`.
-4. Shared code used by 2+ features goes in `shared/`.
-5. When creating a new feature, always create: models → services → components/routes → page.
+1. Each feature is self-contained under `features/`.
+2. Do not import from another feature's internals — use `shared/` or barrel exports.
+3. Shared code used by 2+ features goes in `shared/`.
+4. New features: components → page → route in `App.tsx`.
+5. Static content lives within the feature, not scattered across modules.
 
 ## Naming Conventions
 
-| Item            | Convention      | Example              |
-| --------------- | --------------- | -------------------- |
-| Files           | kebab-case      | `contact-card.tsx`   |
-| Components      | PascalCase      | `ContactCard`        |
-| Functions/hooks | camelCase       | `useContacts`        |
-| Interfaces      | PascalCase      | `Contact`            |
-| Constants       | SCREAMING_SNAKE | `MAX_RETRIES`        |
-| Feature folders | kebab-case      | `contacts`           |
-| Backend files   | dot notation    | `contacts.routes.ts` |
+| Item            | Convention      | Example             |
+| --------------- | --------------- | ------------------- |
+| Files           | kebab-case      | `hero-section.tsx`  |
+| Components      | PascalCase      | `HeroSection`       |
+| Functions/hooks | camelCase       | `useColorMode`      |
+| Constants       | SCREAMING_SNAKE | `MAX_GALLERY_ITEMS` |
+| Feature folders | kebab-case      | `home`, `portfolio` |
+
+## Routing
+
+- Routes are defined in `App.tsx` with lazy-loaded page components.
+- Wrap lazy routes in `<Suspense>` with a loading fallback.
 
 ## React Components
 
-- Use functional components only.
-- Extract logic into custom hooks when a component exceeds ~50 lines.
-- Always define prop interfaces above the component.
-- Keep components pure — side effects go in hooks or services.
-- Use MUI components for all UI — avoid raw HTML when a MUI equivalent exists.
+- Functional components only.
+- Extract hooks when a component exceeds ~50 lines.
+- Define prop interfaces above the component.
+- Use MUI for structural UI; Tailwind via `cn()` for utilities; MagicUI for animations.
 
-## API/Backend
+## Styling & Dark Mode
 
-- Route handlers should be thin — delegate to service functions.
-- Always validate request input before processing.
-- Use parameterized queries for all database calls (prevent SQL injection).
-- Return consistent error response shapes: `{ status: "error", message: string }`.
-- Group routes by feature, not by HTTP method.
+- Use MUI theme tokens, not hardcoded colors.
+- CSS variables in `index.css` for custom UI: `var(--background)`, `var(--foreground)`, etc.
+- Dark mode via `ColorModeProvider` toggling `.dark` on `<html>`.
+
+## UI/UX
+
+- Polished, intuitive interactions with proper loading and empty states.
+- Responsive: desktop-first, graceful on tablet and mobile.
+- Forms: clear labels, validation, disabled submit states.
+- Hash-based section navigation (e.g. `/#contact`) must scroll correctly.
+
+## Code Annotations
+
+Every file starts with a JSDoc header (`@file`, `@feature` or `@shared`, `@dependencies`). Exported functions/components get a one-line JSDoc. Use `// TODO(author): description` format.
 
 ## Code Reuse
 
-- If you write the same logic in 2 places, extract it immediately.
-- Shared UI → `app/src/shared/components/`
-- Shared API logic → `app/src/shared/services/`
-- Shared types → create a model file in the relevant feature or shared folder.
-- Utility functions → `shared/utils/` — keep them pure (no side effects).
+- Shared UI → `shared/components/`
+- Shared hooks → `shared/hooks/`
+- Utilities → `lib/`
+- Animated primitives → `components/magicui/`
 
-## Formatting & Linting
+## Commands
 
-- Prettier handles formatting — do not manually format.
-- ESLint with strict TypeScript rules is enforced.
-- Run `npm run lint` in each workspace before considering code complete.
-- Run `npm run format` from root to auto-format everything.
+```bash
+npm run dev       # Start dev server (http://localhost:5173)
+npm run build     # Production build
+npm run format    # Prettier format
+```
+
+Run from repo root or `app/` directory.
