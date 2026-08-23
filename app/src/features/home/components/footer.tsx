@@ -1,7 +1,7 @@
 /**
  * @file footer.tsx — Site footer with branding and copyright
  * @feature home
- * @dependencies @mui/material
+ * @dependencies @mui/material, logo
  */
 import { Box, Container, Typography, Divider } from "@mui/material";
 import Logo from "@/shared/components/logo";
@@ -23,17 +23,12 @@ function Footer(): React.JSX.Element {
             gap: 2,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Logo height={28} />
-            <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              RC Glam Studio
-            </Typography>
-          </Box>
+          <Logo variant="mark" height={48} />
           <Typography
             variant="body2"
             sx={{ color: "text.secondary", fontSize: "0.8rem" }}
           >
-            © {String(currentYear)} RC Glam Studio. All rights reserved.
+            © {String(currentYear)} Rhoda Cordova MUA. All rights reserved.
           </Typography>
         </Box>
       </Container>

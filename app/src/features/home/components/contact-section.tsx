@@ -27,17 +27,46 @@ import SendIcon from "@mui/icons-material/Send";
 import { ScrollReveal } from "@/components/magicui/scroll-reveal";
 import { BoxReveal } from "@/components/magicui/box-reveal";
 import { BorderBeam } from "@/components/magicui/border-beam";
+import {
+  evaluateContactSpam,
+  MAX_MESSAGE_LENGTH,
+  MAX_NAME_LENGTH,
+  readSubmitTimestamps,
+  recordSubmit,
+} from "../lib/contact-spam-guard";
 
-// --- Contact Info Data ---
-const CONTACT_INFO = [
-  { icon: EmailIcon, label: "Email", value: "hello@rcglamstudio.com" },
-  { icon: PhoneIcon, label: "Phone", value: "+63 917 123 4567" },
+interface ContactInfoItem {
+  icon: typeof EmailIcon;
+  label: string;
+  value: string;
+  href?: string;
+}
+
+const CONTACT_INFO: ContactInfoItem[] = [
+  {
+    icon: EmailIcon,
+    label: "Email",
+    value: "rhodacordova.mua@gmail.com",
+    href: "mailto:rhodacordova.mua@gmail.com",
+  },
+  {
+    icon: PhoneIcon,
+    label: "Phone",
+    value: "+63 927 402 8885",
+    href: "tel:+639274028885",
+  },
   {
     icon: LocationOnIcon,
     label: "Location",
-    value: "Metro Manila, Philippines",
+    value: "Metro Manila / Cavite / Laguna",
   },
 ];
+
+/** Replace these URLs when live Instagram / Facebook pages are ready. */
+const SOCIAL_LINKS = {
+  instagram: "https://instagram.com/YOUR_HANDLE",
+  facebook: "https://facebook.com/YOUR_PAGE",
+};
 
 /** Contact section with form, MagicUI BorderBeam, and studio information. */
 function ContactSection(): React.JSX.Element {
@@ -50,12 +79,13 @@ function ContactSection(): React.JSX.Element {
     message: "",
   });
   const [honeypot, setHoneypot] = useState("");
+  const [formOpenedAt] = useState(() => Date.now());
+  const [hasInteracted, setHasInteracted] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [snackSeverity, setSnackSeverity] = useState<"success" | "warning">(
-    "success",
-  );
-  const [lastSubmitTime, setLastSubmitTime] = useState(0);
+  const [snackSeverity, setSnackSeverity] = useState<
+    "success" | "warning" | "error"
+  >("success");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Pre-select service tier when clicking "Book Bloom/Luxe/Prestige"
@@ -71,54 +101,116 @@ function ContactSection(): React.JSX.Element {
     }
   }, [location.hash]);
 
-  const COOLDOWN_MS = 30000; // 30 seconds between submissions
+  const showSuccess = (): void => {
+    setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
+    setSnackSeverity("success");
+    setSnackOpen(true);
+    setFormData({ name: "", email: "", phone: "", service: "", message: "" });
+    setHoneypot("");
+  };
 
   const handleChange =
     (field: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+      setHasInteracted(true);
       setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
 
-    // --- Spam Guard: Honeypot check (bots fill hidden fields) ---
-    if (honeypot !== "") {
-      // Silently reject — don't reveal detection to the bot
-      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
-      setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
-      setSnackSeverity("success");
-      setSnackOpen(true);
-      return;
-    }
+    const decision = evaluateContactSpam({
+      honeypot,
+      name: formData.name,
+      message: formData.message,
+      formOpenedAt,
+      hasInteracted,
+      now: Date.now(),
+      submitTimestamps: readSubmitTimestamps(),
+    });
 
-    // --- Spam Guard: Cooldown check ---
-    const now = Date.now();
-    if (now - lastSubmitTime < COOLDOWN_MS) {
-      const secondsLeft = Math.ceil(
-        (COOLDOWN_MS - (now - lastSubmitTime)) / 1000,
-      );
-      setSnackMessage(
-        `Please wait ${String(secondsLeft)} seconds before sending another message.`,
-      );
+    if (!decision.allow) {
+      if (decision.silent) {
+        showSuccess();
+        return;
+      }
+      setSnackMessage(decision.message);
       setSnackSeverity("warning");
       setSnackOpen(true);
       return;
     }
 
-    // --- Valid submission ---
     setIsSubmitting(true);
-    setLastSubmitTime(now);
 
-    // Simulate sending (replace with real API call later)
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSnackMessage("Message sent! I'll get back to you within 24 hours. 💄");
-      setSnackSeverity("success");
-      setSnackOpen(true);
-      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
-    }, 800);
+    void sendInquiry()
+      .then(() => {
+        recordSubmit(Date.now());
+        showSuccess();
+      })
+      .catch(() => {
+        setSnackMessage(
+          "Couldn't send right now. Please email rhodacordova.mua@gmail.com.",
+        );
+        setSnackSeverity("error");
+        setSnackOpen(true);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
+
+  /** Posts the inquiry to FormSubmit, which forwards it to Gmail. */
+  async function sendInquiry(): Promise<void> {
+    const phone =
+      formData.phone === "" ? "Not provided" : formData.phone;
+    const service =
+      formData.service === "" ? "Not specified" : formData.service;
+    const details = [
+      `Name: ${formData.name}`,
+      `Email: ${formData.email}`,
+      `Phone: ${phone}`,
+      `Package: ${service}`,
+      "",
+      "Message:",
+      formData.message,
+    ].join("\n");
+
+    const body = new FormData();
+    body.append("Name", formData.name);
+    body.append("Email", formData.email);
+    body.append("Phone", phone);
+    body.append("Package", service);
+    body.append("Message", formData.message);
+    body.append("Details", details);
+    body.append("_subject", `New inquiry from ${formData.name} — Rhoda Cordova MUA`);
+    body.append("_template", "table");
+    body.append("_captcha", "false");
+    body.append("_honey", honeypot);
+    body.append("_replyto", formData.email);
+
+    const response = await fetch(
+      "https://formsubmit.co/ajax/rhodacordova.mua@gmail.com",
+      {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body,
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("FormSubmit request failed");
+    }
+
+    const payload: unknown = await response.json();
+    if (
+      typeof payload === "object" &&
+      payload !== null &&
+      "success" in payload &&
+      payload.success === false
+    ) {
+      throw new Error("FormSubmit rejected the message");
+    }
+  }
 
   return (
     <Box
@@ -215,6 +307,7 @@ function ContactSection(): React.JSX.Element {
                       value={formData.name}
                       onChange={handleChange("name")}
                       required
+                      slotProps={{ htmlInput: { maxLength: MAX_NAME_LENGTH } }}
                       variant="outlined"
                       sx={{
                         "& .MuiOutlinedInput-root": {
@@ -302,6 +395,8 @@ function ContactSection(): React.JSX.Element {
                       value={formData.message}
                       onChange={handleChange("message")}
                       required
+                      helperText="Include the date, location, and look you have in mind."
+                      slotProps={{ htmlInput: { maxLength: MAX_MESSAGE_LENGTH } }}
                       variant="outlined"
                       sx={{
                         "& .MuiOutlinedInput-root": {
@@ -313,26 +408,35 @@ function ContactSection(): React.JSX.Element {
                       }}
                     />
                   </Grid>
-                  {/* --- Honeypot: Hidden field to catch bots --- */}
-                  <Grid size={{ xs: 12 }}>
-                    <TextField
-                      fullWidth
-                      label="Website"
-                      value={honeypot}
-                      onChange={(e) => {
-                        setHoneypot(e.target.value);
-                      }}
-                      autoComplete="off"
-                      tabIndex={-1}
-                      sx={{
-                        position: "absolute",
-                        left: "-9999px",
-                        opacity: 0,
-                        height: 0,
-                        overflow: "hidden",
-                      }}
-                    />
-                  </Grid>
+                  {/* --- Honeypot: bots fill this; people never see it --- */}
+                  <Box
+                    aria-hidden="true"
+                    sx={{
+                      position: "absolute",
+                      width: 1,
+                      height: 1,
+                      p: 0,
+                      m: -1,
+                      overflow: "hidden",
+                      clipPath: "inset(50%)",
+                      whiteSpace: "nowrap",
+                      border: 0,
+                    }}
+                  >
+                    <label>
+                      Company website
+                      <input
+                        type="text"
+                        name="_honey"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={honeypot}
+                        onChange={(e) => {
+                          setHoneypot(e.target.value);
+                        }}
+                      />
+                    </label>
+                  </Box>
                   <Grid size={{ xs: 12 }}>
                     <Button
                       type="submit"
@@ -381,7 +485,21 @@ function ContactSection(): React.JSX.Element {
                       >
                         {info.label}
                       </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      <Typography
+                        variant="body1"
+                        component={info.href ? "a" : "p"}
+                        href={info.href}
+                        sx={{
+                          fontWeight: 500,
+                          color: "text.primary",
+                          textDecoration: "none",
+                          ...(info.href
+                            ? {
+                                "&:hover": { color: "primary.main" },
+                              }
+                            : {}),
+                        }}
+                      >
                         {info.value}
                       </Typography>
                     </Box>
@@ -398,7 +516,7 @@ function ContactSection(): React.JSX.Element {
                   </Typography>
                   <Stack direction="row" spacing={1}>
                     <IconButton
-                      href="https://instagram.com"
+                      href={SOCIAL_LINKS.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Instagram"
@@ -413,7 +531,7 @@ function ContactSection(): React.JSX.Element {
                       <InstagramIcon />
                     </IconButton>
                     <IconButton
-                      href="https://facebook.com"
+                      href={SOCIAL_LINKS.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"

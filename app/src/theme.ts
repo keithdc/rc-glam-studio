@@ -1,5 +1,5 @@
 /**
- * @file theme.ts — MUI theme configuration for RC Glam Studio (light + dark)
+ * @file theme.ts — MUI theme configuration for Rhoda Cordova MUA (light + dark)
  * @shared
  * @dependencies @mui/material
  *

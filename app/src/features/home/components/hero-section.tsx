@@ -52,18 +52,13 @@ function HeroSection(): React.JSX.Element {
         maxWidth="md"
         sx={{ position: "relative", zIndex: 1, textAlign: "center" }}
       >
-        {/* --- Logo with BlurFade --- */}
+        {/* --- Brand lockup --- */}
         <BlurFade delay={0.2} inView>
           <Logo
-            height={{ xs: 90, md: 160 }}
-            sx={{
-              mx: "auto",
-              mb: { xs: 2, md: 4 },
-              display: "block",
-              filter: isDark
-                ? "drop-shadow(0 0 40px rgba(183, 110, 121, 0.4))"
-                : "drop-shadow(0 0 20px rgba(183, 110, 121, 0.2))",
-            }}
+            variant="full"
+            layout="vertical"
+            height={{ xs: 220, md: 320 }}
+            sx={{ mx: "auto", mb: { xs: 2, md: 3 } }}
           />
         </BlurFade>
 

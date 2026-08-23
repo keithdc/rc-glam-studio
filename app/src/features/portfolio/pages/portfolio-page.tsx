@@ -14,12 +14,19 @@ import {
 import { motion } from "framer-motion";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import Logo from "@/shared/components/logo";
+import ProtectedImage from "@/shared/components/protected-image";
 import { useColorMode } from "@/shared/hooks/use-color-mode";
+import {
+  getPortfolioGalleryItems,
+  isWorkCategory,
+  type WorkCategory,
+} from "@/shared/portfolio-media";
 
 // --- Portfolio categories ---
-const CATEGORIES = [
+const CATEGORIES: Array<"All" | WorkCategory> = [
   "All",
   "Bridal",
   "Editorial",
@@ -28,69 +35,24 @@ const CATEGORIES = [
   "Lessons",
 ];
 
-// --- Portfolio items (placeholders — replace with real images) ---
-interface PortfolioItem {
-  id: number;
-  label: string;
-  category: string;
-  aspect: "portrait" | "landscape" | "square";
-}
-
-const PORTFOLIO_ITEMS: PortfolioItem[] = [
-  { id: 1, label: "Bridal Classic", category: "Bridal", aspect: "portrait" },
-  { id: 2, label: "Soft Glam Bride", category: "Bridal", aspect: "landscape" },
-  { id: 3, label: "Editorial Bold", category: "Editorial", aspect: "square" },
-  { id: 4, label: "Magazine Cover", category: "Editorial", aspect: "portrait" },
-  { id: 5, label: "Debut Night", category: "Events", aspect: "landscape" },
-  { id: 6, label: "Prom Queen", category: "Events", aspect: "square" },
-  { id: 7, label: "Corporate Ready", category: "Everyday", aspect: "portrait" },
-  {
-    id: 8,
-    label: "Date Night Glow",
-    category: "Everyday",
-    aspect: "landscape",
-  },
-  { id: 9, label: "Bridal Party", category: "Bridal", aspect: "landscape" },
-  { id: 10, label: "Creative Art", category: "Editorial", aspect: "square" },
-  { id: 11, label: "Gala Evening", category: "Events", aspect: "portrait" },
-  { id: 12, label: "Natural Dewy", category: "Everyday", aspect: "square" },
-  {
-    id: 13,
-    label: "Tutorial Session",
-    category: "Lessons",
-    aspect: "landscape",
-  },
-  {
-    id: 14,
-    label: "Smokey Eye Class",
-    category: "Lessons",
-    aspect: "portrait",
-  },
-  { id: 15, label: "Beach Wedding", category: "Bridal", aspect: "landscape" },
-  { id: 16, label: "Fashion Week", category: "Editorial", aspect: "portrait" },
-];
-
 /** Full portfolio gallery page with category filtering. */
 function PortfolioPage(): React.JSX.Element {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category") ?? "";
+  const initialCategory: "All" | WorkCategory = isWorkCategory(categoryParam)
+    ? categoryParam
+    : "All";
+  const [activeCategory, setActiveCategory] = useState<"All" | WorkCategory>(
+    initialCategory,
+  );
   const { mode } = useColorMode();
   const isDark = mode === "dark";
+  const portfolioItems = getPortfolioGalleryItems();
 
   const filteredItems =
     activeCategory === "All"
-      ? PORTFOLIO_ITEMS
-      : PORTFOLIO_ITEMS.filter((item) => item.category === activeCategory);
-
-  const getAspectRatio = (aspect: PortfolioItem["aspect"]): string => {
-    switch (aspect) {
-      case "portrait":
-        return "3/4";
-      case "landscape":
-        return "4/3";
-      case "square":
-        return "1/1";
-    }
-  };
+      ? portfolioItems
+      : portfolioItems.filter((item) => item.category === activeCategory);
 
   return (
     <Box
@@ -139,7 +101,7 @@ function PortfolioPage(): React.JSX.Element {
               </Typography>
             </Box>
           </Box>
-          <Logo height={{ xs: 36, md: 48 }} />
+          <Logo variant="mark" height={{ xs: 44, md: 52 }} />
         </Box>
 
         {/* --- Category Filter --- */}
@@ -181,7 +143,10 @@ function PortfolioPage(): React.JSX.Element {
             columnGap: { xs: "8px", sm: "12px", md: "16px" },
           }}
         >
-          {filteredItems.map((item, index) => (
+          {filteredItems.map((item, index) => {
+            const photoSrc = item.src;
+
+            return (
             <motion.div
               key={item.id}
               layout
@@ -194,13 +159,20 @@ function PortfolioPage(): React.JSX.Element {
               <Box
                 sx={{
                   position: "relative",
-                  aspectRatio: getAspectRatio(item.aspect),
+                  aspectRatio:
+                    item.aspect === "portrait"
+                      ? "3/4"
+                      : item.aspect === "landscape"
+                        ? "4/3"
+                        : "1/1",
                   borderRadius: 2,
                   overflow: "hidden",
                   background: (t) =>
-                    t.palette.mode === "dark"
-                      ? `linear-gradient(${String(135 + item.id * 20)}deg, rgba(183, 110, 121, ${String(0.08 + (item.id % 5) * 0.04)}) 0%, rgba(114, 47, 55, 0.12) 100%)`
-                      : `linear-gradient(${String(135 + item.id * 20)}deg, rgba(183, 110, 121, ${String(0.06 + (item.id % 5) * 0.03)}) 0%, rgba(245, 230, 211, 0.25) 100%)`,
+                    photoSrc != null
+                      ? t.palette.action.hover
+                      : t.palette.mode === "dark"
+                        ? `linear-gradient(${String(135 + index * 20)}deg, rgba(183, 110, 121, ${String(0.08 + (index % 5) * 0.04)}) 0%, rgba(114, 47, 55, 0.12) 100%)`
+                        : `linear-gradient(${String(135 + index * 20)}deg, rgba(183, 110, 121, ${String(0.06 + (index % 5) * 0.03)}) 0%, rgba(245, 230, 211, 0.25) 100%)`,
                   border: 1,
                   borderColor: "divider",
                   cursor: "pointer",
@@ -217,6 +189,40 @@ function PortfolioPage(): React.JSX.Element {
                   },
                 }}
               >
+                {photoSrc != null ? (
+                  <ProtectedImage
+                    src={photoSrc}
+                    alt={item.label}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "primary.main",
+                        fontStyle: "italic",
+                        opacity: 0.8,
+                        px: 1,
+                        textAlign: "center",
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                  </Box>
+                )}
                 {/* --- Hover overlay with label --- */}
                 <Box
                   className="portfolio-label"
@@ -260,17 +266,9 @@ function PortfolioPage(): React.JSX.Element {
                 />
               </Box>
             </motion.div>
-          ))}
+            );
+          })}
         </Box>
-
-        {/* --- Empty state --- */}
-        {filteredItems.length === 0 && (
-          <Box sx={{ textAlign: "center", py: 8 }}>
-            <Typography variant="body1" sx={{ color: "text.secondary" }}>
-              No works in this category yet. Check back soon!
-            </Typography>
-          </Box>
-        )}
       </Container>
     </Box>
   );

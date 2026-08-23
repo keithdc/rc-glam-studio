@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import Navbar from "../components/navbar";
 import HeroSection from "../components/hero-section";
 import AboutSection from "../components/about-section";
+import CertificationsSection from "../components/certifications-section";
 import ServicesSection from "../components/services-section";
 import PricingSection from "../components/pricing-section";
 import GallerySection from "../components/gallery-section";
@@ -47,6 +48,7 @@ function HomePage(): React.JSX.Element {
       <Navbar />
       <HeroSection />
       <AboutSection />
+      <CertificationsSection />
       <ServicesSection />
       <PricingSection />
       <GallerySection />

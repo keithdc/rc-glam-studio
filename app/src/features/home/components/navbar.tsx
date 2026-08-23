@@ -29,6 +29,7 @@ import Logo from "@/shared/components/logo";
 // --- Navigation Links ---
 const NAV_LINKS = [
   { label: "About", href: "#about" },
+  { label: "Certifications", href: "#certifications" },
   { label: "Services", href: "#services" },
   { label: "Pricing", href: "#pricing" },
   { label: "Portfolio", href: "#portfolio" },
@@ -85,25 +86,33 @@ function Navbar(): React.JSX.Element {
           <Toolbar
             sx={{
               justifyContent: "space-between",
+              alignItems: "center",
               maxWidth: "lg",
               width: "100%",
               mx: "auto",
+              minHeight: { xs: 64, lg: 72 },
+              py: 1,
+              gap: 1,
+              flexWrap: "nowrap",
             }}
           >
             {/* --- Logo --- */}
             <Logo
+              variant="mark"
               height={40}
               onClick={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
+              sx={{ flexShrink: 0, overflow: "hidden" }}
             />
 
             {/* --- Desktop Nav --- */}
             <Box
               sx={{
-                display: { xs: "none", md: "flex" },
-                gap: 1,
+                display: { xs: "none", lg: "flex" },
+                gap: 0.25,
                 alignItems: "center",
+                minWidth: 0,
               }}
             >
               {NAV_LINKS.map((link) => (
@@ -114,9 +123,15 @@ function Navbar(): React.JSX.Element {
                   }}
                   sx={{
                     color: "text.primary",
-                    fontSize: "0.85rem",
+                    fontSize: "0.8rem",
                     fontWeight: 400,
-                    letterSpacing: "0.03em",
+                    letterSpacing: "0.02em",
+                    whiteSpace: "nowrap",
+                    minWidth: 0,
+                    minHeight: 36,
+                    px: 1.25,
+                    py: 0.75,
+                    lineHeight: 1,
                     "&:hover": {
                       color: "primary.main",
                       backgroundColor: "transparent",
@@ -127,7 +142,6 @@ function Navbar(): React.JSX.Element {
                 </Button>
               ))}
 
-              {/* --- Theme Toggle --- */}
               <IconButton
                 onClick={toggleColorMode}
                 aria-label={
@@ -135,11 +149,10 @@ function Navbar(): React.JSX.Element {
                 }
                 sx={{
                   color: "text.primary",
-                  ml: 0.5,
-                  transition: "transform 0.3s ease",
+                  ml: 0.25,
+                  flexShrink: 0,
                   "&:hover": {
                     color: "primary.main",
-                    transform: "rotate(30deg)",
                   },
                 }}
               >
@@ -153,22 +166,31 @@ function Navbar(): React.JSX.Element {
               <Button
                 variant="contained"
                 color="primary"
-                size="small"
                 onClick={() => {
                   handleNavClick("#contact");
                 }}
-                sx={{ ml: 1, px: 3 }}
+                sx={{
+                  ml: 1,
+                  px: 2.5,
+                  py: 0.85,
+                  minHeight: 36,
+                  fontSize: "0.8rem",
+                  lineHeight: 1,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
               >
                 Book Now
               </Button>
             </Box>
 
-            {/* --- Mobile: Toggle + Menu --- */}
+            {/* --- Mobile / tablet: Toggle + Menu --- */}
             <Box
               sx={{
-                display: { xs: "flex", md: "none" },
+                display: { xs: "flex", lg: "none" },
                 alignItems: "center",
                 gap: 0.5,
+                flexShrink: 0,
               }}
             >
               <IconButton
@@ -205,11 +227,13 @@ function Navbar(): React.JSX.Element {
         onClose={() => {
           setMobileOpen(false);
         }}
-        PaperProps={{
-          sx: {
-            width: 280,
-            backgroundColor: "background.paper",
-            backdropFilter: "blur(20px)",
+        slotProps={{
+          paper: {
+            sx: {
+              width: 280,
+              backgroundColor: "background.paper",
+              backdropFilter: "blur(20px)",
+            },
           },
         }}
       >
@@ -238,6 +262,19 @@ function Navbar(): React.JSX.Element {
               </ListItemButton>
             </ListItem>
           ))}
+          <ListItem disablePadding sx={{ px: 2, pt: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={() => {
+                handleNavClick("#contact");
+              }}
+              sx={{ whiteSpace: "nowrap" }}
+            >
+              Book Now
+            </Button>
+          </ListItem>
         </List>
       </Drawer>
     </>

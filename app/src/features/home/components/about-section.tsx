@@ -101,8 +101,8 @@ function AboutSection(): React.JSX.Element {
                 variant="body1"
                 sx={{ color: "text.secondary", mb: 2 }}
               >
-                With over 8 years of experience in the beauty industry, RC Glam
-                Studio specializes in creating flawless, long-lasting makeup
+                With over 8 years of experience in the beauty industry, Rhoda
+                Cordova specializes in creating flawless, long-lasting makeup
                 looks that enhance your natural beauty. From intimate weddings
                 to high-fashion editorials, every face tells a unique story.
               </Typography>
