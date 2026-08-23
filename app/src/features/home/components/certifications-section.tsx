@@ -13,17 +13,15 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import CloseIcon from "@mui/icons-material/Close";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ScrollReveal } from "@/components/magicui/scroll-reveal";
 import { BoxReveal } from "@/components/magicui/box-reveal";
 import ProtectedImage from "@/shared/components/protected-image";
-
-interface CertificateItem {
-  src: string;
-  course: string;
-  hours: string;
-  date: string;
-  alt: string;
-}
+import CertificateCard, {
+  type CertificateItem,
+} from "./certificate-card";
+import { useSnapCarousel } from "../hooks/use-snap-carousel";
 
 const CERTIFICATES: CertificateItem[] = [
   {
@@ -84,10 +82,17 @@ const CERTIFICATES: CertificateItem[] = [
   },
 ];
 
+const LAST_INDEX = CERTIFICATES.length - 1;
+
 /** Mentorship certificates from Nix Institute of Beauty. */
 function CertificationsSection(): React.JSX.Element {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const activeCert = activeIndex != null ? CERTIFICATES[activeIndex] : undefined;
+  const carousel = useSnapCarousel();
+
+  const openCert = (index: number): void => {
+    setActiveIndex(index);
+  };
 
   return (
     <Box
@@ -136,85 +141,134 @@ function CertificationsSection(): React.JSX.Element {
           </ScrollReveal>
         </Box>
 
-        <Grid container spacing={{ xs: 2, md: 3 }}>
-          {CERTIFICATES.map((cert, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={cert.src}>
-              <ScrollReveal direction="up" delay={index * 0.06} offset={40}>
+        <Box
+          aria-roledescription="carousel"
+          aria-label="Certification gallery"
+          sx={{ display: { xs: "block", md: "none" } }}
+        >
+            <Typography
+              variant="caption"
+              sx={{
+                display: "block",
+                textAlign: "center",
+                color: "text.secondary",
+                mb: 1.5,
+              }}
+            >
+              Swipe to see more
+            </Typography>
+            <Box
+              ref={carousel.scrollerRef}
+              onScroll={carousel.handleScroll}
+              sx={{
+                display: "flex",
+                gap: 2,
+                overflowX: "auto",
+                scrollSnapType: "x mandatory",
+                scrollPaddingInline: 24,
+                px: 1,
+                pb: 1,
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                "&::-webkit-scrollbar": { display: "none" },
+              }}
+            >
+              {CERTIFICATES.map((cert, index) => (
                 <Box
-                  component="button"
-                  type="button"
-                  onClick={() => {
-                    setActiveIndex(index);
-                  }}
-                  aria-label={`View ${cert.course} certificate`}
+                  key={cert.src}
+                  ref={carousel.setSlideRef(index)}
                   sx={{
-                    display: "block",
-                    width: "100%",
-                    p: 0,
-                    border: 1,
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    bgcolor: "background.paper",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      borderColor: "primary.main",
-                      transform: "translateY(-4px)",
-                      boxShadow: "0 12px 28px rgba(183, 110, 121, 0.16)",
-                    },
+                    flex: "0 0 82%",
+                    maxWidth: 420,
+                    scrollSnapAlign: "center",
                   }}
                 >
-                  <Box
-                    sx={{
-                      aspectRatio: "4 / 3",
-                      bgcolor: "action.hover",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
+                  <CertificateCard
+                    cert={cert}
+                    onOpen={() => {
+                      openCert(index);
                     }}
-                  >
-                    <ProtectedImage
-                      src={cert.src}
-                      alt=""
-                      sx={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ p: 1.75 }}>
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        fontWeight: 600,
-                        color: "text.primary",
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      {cert.course}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: "text.secondary", display: "block", mt: 0.5 }}
-                    >
-                      Nix Institute of Beauty · {cert.hours}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: "text.secondary" }}
-                    >
-                      {cert.date}
-                    </Typography>
-                  </Box>
+                  />
                 </Box>
-              </ScrollReveal>
-            </Grid>
-          ))}
-        </Grid>
+              ))}
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+                mt: 2,
+              }}
+            >
+              <IconButton
+                aria-label="Previous certificate"
+                size="small"
+                disabled={carousel.activeIndex === 0}
+                onClick={() => {
+                  carousel.scrollToIndex(Math.max(0, carousel.activeIndex - 1));
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+              {CERTIFICATES.map((cert, index) => (
+                <Box
+                  key={cert.src}
+                  component="button"
+                  type="button"
+                  aria-label={`Show ${cert.course}`}
+                  aria-current={
+                    carousel.activeIndex === index ? true : undefined
+                  }
+                  onClick={() => {
+                    carousel.scrollToIndex(index);
+                  }}
+                  sx={{
+                    width: carousel.activeIndex === index ? 18 : 8,
+                    height: 8,
+                    p: 0,
+                    border: 0,
+                    borderRadius: 4,
+                    bgcolor:
+                      carousel.activeIndex === index
+                        ? "primary.main"
+                        : "action.disabled",
+                    cursor: "pointer",
+                    transition: "width 0.2s ease, background-color 0.2s ease",
+                  }}
+                />
+              ))}
+              <IconButton
+                aria-label="Next certificate"
+                size="small"
+                disabled={carousel.activeIndex === LAST_INDEX}
+                onClick={() => {
+                  carousel.scrollToIndex(
+                    Math.min(LAST_INDEX, carousel.activeIndex + 1),
+                  );
+                }}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+            </Box>
+        </Box>
+
+        <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <Grid container spacing={{ xs: 2, md: 3 }}>
+            {CERTIFICATES.map((cert, index) => (
+              <Grid size={{ md: 4, lg: 3 }} key={cert.src}>
+                <ScrollReveal direction="up" delay={index * 0.06} offset={40}>
+                  <CertificateCard
+                    cert={cert}
+                    onOpen={() => {
+                      openCert(index);
+                    }}
+                  />
+                </ScrollReveal>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Container>
 
       <Dialog

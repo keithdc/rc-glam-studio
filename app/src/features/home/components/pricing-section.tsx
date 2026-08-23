@@ -4,7 +4,6 @@
  * @dependencies @mui/material, magicui components
  */
 import { Box, Container, Typography, Stack, Chip, Button } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { ScrollReveal } from "@/components/magicui/scroll-reveal";
 import { BoxReveal } from "@/components/magicui/box-reveal";
@@ -103,7 +102,11 @@ function PricingCard({ tier }: { tier: PricingTier }): React.JSX.Element {
         border: 1,
         borderColor: tier.popular ? "primary.main" : "divider",
         p: { xs: 3, sm: 3.5, md: 4 },
-        height: "100%",
+        width: "100%",
+        flex: 1,
+        alignSelf: "stretch",
+        height: { xs: "auto", md: "100%" },
+        minHeight: { md: "100%" },
         display: "flex",
         flexDirection: "column",
         transition: "all 0.3s ease",
@@ -126,14 +129,23 @@ function PricingCard({ tier }: { tier: PricingTier }): React.JSX.Element {
 
       {/* --- Header --- */}
       <Box sx={{ mb: 3 }}>
-        {tier.popular && (
-          <Chip
-            label="Most Popular"
-            size="small"
-            color="primary"
-            sx={{ mb: 1.5, fontWeight: 600, fontSize: "0.7rem" }}
-          />
-        )}
+        <Box
+          sx={{
+            minHeight: 32,
+            mb: 1.5,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          {tier.popular && (
+            <Chip
+              label="Most Popular"
+              size="small"
+              color="primary"
+              sx={{ fontWeight: 600, fontSize: "0.7rem" }}
+            />
+          )}
+        </Box>
         <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
           {tier.name}
         </Typography>
@@ -286,20 +298,30 @@ function PricingSection(): React.JSX.Element {
           </ScrollReveal>
         </Box>
 
-        {/* --- Pricing Cards --- */}
-        <Grid
-          container
-          spacing={{ xs: 2, sm: 2.5, md: 3 }}
-          alignItems="stretch"
+        <Box
+          data-pricing-grid="equal"
+          sx={{
+            display: { xs: "flex", md: "grid" },
+            flexDirection: { xs: "column", md: "unset" },
+            gridTemplateColumns: { md: "repeat(3, minmax(0, 1fr))" },
+            gridAutoRows: { md: "1fr" },
+            alignItems: { md: "stretch" },
+            gap: { xs: 2, sm: 2.5, md: 3 },
+          }}
         >
-          {PRICING_TIERS.map((tier, index) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tier.name}>
-              <ScrollReveal direction="up" delay={index * 0.1} scale={0.95}>
-                <PricingCard tier={tier} />
-              </ScrollReveal>
-            </Grid>
+          {PRICING_TIERS.map((tier) => (
+            <Box
+              key={tier.name}
+              sx={{
+                display: "flex",
+                height: { md: "100%" },
+                minHeight: { md: 0 },
+              }}
+            >
+              <PricingCard tier={tier} />
+            </Box>
           ))}
-        </Grid>
+        </Box>
 
         {/* --- Note --- */}
         <ScrollReveal direction="up" delay={0.4}>
