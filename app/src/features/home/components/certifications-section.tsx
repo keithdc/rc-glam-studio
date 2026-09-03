@@ -276,20 +276,48 @@ function CertificationsSection(): React.JSX.Element {
         onClose={() => {
           setActiveIndex(null);
         }}
-        maxWidth="md"
+        maxWidth={false}
         fullWidth
+        sx={{
+          "& .MuiDialog-paper": {
+            "@media (max-width: 1199.95px)": {
+              margin: 0,
+              width: "100%",
+              maxWidth: "100%",
+              height: "100%",
+              maxHeight: "100%",
+              borderRadius: 0,
+            },
+          },
+        }}
         slotProps={{
           paper: {
             sx: {
               bgcolor: "background.paper",
               backgroundImage: "none",
               overflow: "hidden",
+              borderRadius: { xs: 0, lg: 2 },
+              m: { xs: 0, lg: 4 },
+              width: { xs: "100%", lg: "min(900px, calc(100% - 64px))" },
+              maxWidth: { xs: "100%", lg: "900px" },
+              height: { xs: "100%", lg: "auto" },
+              maxHeight: { xs: "100%", lg: "90vh" },
             },
           },
         }}
       >
         {activeCert != null && (
-          <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              position: "relative",
+              height: { xs: "100%", lg: "auto" },
+              minHeight: { xs: "100dvh", lg: 0 },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: "background.default",
+            }}
+          >
             <IconButton
               aria-label="Close certificate"
               onClick={() => {
@@ -307,13 +335,13 @@ function CertificationsSection(): React.JSX.Element {
               <CloseIcon />
             </IconButton>
             <ProtectedImage
-              fill={false}
+              fill
               src={activeCert.src}
               alt={activeCert.alt}
               sx={{
                 width: "100%",
-                height: "auto",
-                maxHeight: "85vh",
+                height: { xs: "100%", lg: "auto" },
+                maxHeight: { xs: "100%", lg: "85vh" },
                 objectFit: "contain",
               }}
             />
