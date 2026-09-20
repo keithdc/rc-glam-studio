@@ -1,5 +1,5 @@
 /**
- * @file vite-env.d.ts — Vite client types and virtual portfolio manifest
+ * @file vite-env.d.ts — Vite client types and virtual media manifests
  * @shared
  */
 /// <reference types="vite/client" />
@@ -15,4 +15,9 @@ declare module "virtual:portfolio-media" {
 
   const manifest: PortfolioManifest;
   export default manifest;
+}
+
+declare module "virtual:about-media" {
+  const urls: string[];
+  export default urls;
 }

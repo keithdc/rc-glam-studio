@@ -9,6 +9,7 @@ import { ScrollReveal } from "@/components/magicui/scroll-reveal";
 import { ScrollParallax } from "@/components/magicui/scroll-parallax";
 import { BoxReveal } from "@/components/magicui/box-reveal";
 import { NumberTicker } from "@/components/magicui/number-ticker";
+import AboutPhotoCarousel from "./about-photo-carousel";
 
 // --- Stats Data ---
 const STATS = [
@@ -31,40 +32,11 @@ function AboutSection(): React.JSX.Element {
     >
       <Container maxWidth="lg">
         <Grid container spacing={{ xs: 4, sm: 5, md: 8 }} alignItems="center">
-          {/* --- Image Placeholder with Parallax --- */}
+          {/* --- About photo carousel --- */}
           <Grid size={{ xs: 12, md: 5 }}>
             <ScrollReveal direction="left" duration={0.7}>
               <ScrollParallax speed={0.15}>
-                <Box
-                  sx={{
-                    position: "relative",
-                    borderRadius: 4,
-                    overflow: "hidden",
-                    aspectRatio: { xs: "4/3", sm: "1/1", md: "3/4" },
-                    maxHeight: { xs: 250, sm: 320, md: "none" },
-                    background: (theme) =>
-                      theme.palette.mode === "dark"
-                        ? "linear-gradient(135deg, rgba(183, 110, 121, 0.2) 0%, rgba(114, 47, 55, 0.1) 100%)"
-                        : "linear-gradient(135deg, rgba(183, 110, 121, 0.1) 0%, rgba(245, 230, 211, 0.3) 100%)",
-                    border: 1,
-                    borderColor: "divider",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Typography
-                    variant="h2"
-                    sx={{
-                      fontSize: { xs: "3rem", sm: "4rem", md: "6rem" },
-                      color: "primary.main",
-                      opacity: 0.3,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    RC
-                  </Typography>
-                </Box>
+                <AboutPhotoCarousel />
               </ScrollParallax>
             </ScrollReveal>
           </Grid>
