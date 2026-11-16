@@ -4,7 +4,6 @@
  */
 import { BUSINESS_PROFILE } from "@/shared/business-profile";
 import BrandedQr from "./branded-qr";
-import CardCornerFrame from "./card-corner-frame";
 
 /** 2 × 4 on US Letter — leaves room for printer top/bottom margins */
 const SHEET_COPY_COUNT = 8;
@@ -18,8 +17,6 @@ function CallingCardBackFace(): React.JSX.Element {
       className="calling-card-print__face calling-card-print__face--back"
       aria-label="Calling card back"
     >
-      <CardCornerFrame />
-
       <div className="calling-card-print__back-bands">
         <div className="calling-card-print__back-band calling-card-print__back-band--contact">
           <div className="calling-card-print__contact-block calling-card-print__contact-block--duo">

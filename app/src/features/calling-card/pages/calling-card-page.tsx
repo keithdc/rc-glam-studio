@@ -79,7 +79,10 @@ function CallingCardPage(): React.JSX.Element {
             Print calling card
           </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary", maxWidth: 520 }}>
-            Standard size 3.5″ × 2″. Rose gold accents match the website palette.
+            Standard 3.5″ × 2″ with inner margins; preview is 2× on screen. On the PDF, each card has a{" "}
+            <strong>dashed rose border on the front only</strong> — cut using the front; backs have
+            no border. Rose gold
+            accents match the website palette.
             Back has three QRs — portfolio, Instagram, and Facebook. QRs use{" "}
             <code style={{ fontSize: "0.85em" }}>utm_source=qr</code>.
             Enable <strong>Background graphics</strong> when
@@ -148,7 +151,7 @@ function CallingCardPage(): React.JSX.Element {
             </li>
           </Box>
           <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            Cut along the cream card edge. Rose L-corners print on the card. For many cards, send the
+            Cut on the <strong>front</strong> dashed outline only. For many cards, send the
             PDF to a print shop (3.5″ × 2″ business card stock).
           </Typography>
           <Link

@@ -15,18 +15,19 @@ function CallingCardFrontFace(): React.JSX.Element {
       aria-label="Calling card front"
     >
       <CardCornerFrame />
-      <img
-        className="calling-card-print__logo"
-        src="/logo-d-mark.png"
-        alt=""
-        aria-hidden="true"
-      />
-      <h1 className="calling-card-print__name">{profile.brandName}</h1>
-      <div className="calling-card-print__rule" aria-hidden="true" />
-      <p className="calling-card-print__tagline">{profile.callingCardServices}</p>
-      <p className="calling-card-print__tagline calling-card-print__tagline--sub">
-        {profile.tagline}
-      </p>
+      <div className="calling-card-print__front-stack">
+        <img
+          className="calling-card-print__logo"
+          src="/logo-d-mark.png"
+          alt=""
+          aria-hidden="true"
+        />
+        <h1 className="calling-card-print__name">{profile.brandName}</h1>
+        <div className="calling-card-print__rule" aria-hidden="true" />
+        <p className="calling-card-print__tagline">{profile.callingCardServices}</p>
+      </div>
+      <div className="calling-card-print__front-gap" aria-hidden="true" />
+      <p className="calling-card-print__front-footer">{profile.tagline}</p>
     </div>
   );
 }

@@ -11,6 +11,11 @@
   --card-trim-w: 3.5in;
   --card-trim-h: 2in;
   --card-bleed: 0.125in;
+  /* Live area inside trim (3.5″ × 2″) — keep copy inside for cutting tolerance */
+  --card-margin-x: 0.2in;
+  --card-margin-top: 0.24in;
+  --card-margin-bottom: 0.3in;
+  --preview-scale: 2;
 }
 
 .calling-card-print__workspace {
@@ -19,6 +24,19 @@
   gap: 2rem;
   justify-content: center;
   padding: 2rem 1rem 3rem;
+}
+
+/* Screen: enlarge preview; print stays true 3.5″ × 2″ */
+@media screen {
+  .calling-card-print__workspace--preview .calling-card-print__artboard {
+    transform: scale(var(--preview-scale));
+    transform-origin: center top;
+    margin-bottom: calc(2.5rem + var(--card-trim-h) * (var(--preview-scale) - 1));
+  }
+
+  .calling-card-print__workspace--preview .calling-card-print__sheet-label {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .calling-card-print__sheet-label {
@@ -61,14 +79,22 @@
   color: var(--card-text);
 }
 
+/* Cut line: front only — cut from front, back stays borderless */
+.calling-card-print__workspace--preview .calling-card-print__face--front {
+  border: 1pt dashed var(--card-primary-dark);
+}
+
 /* --- Front --- */
 .calling-card-print__face--front {
+  position: relative;
+  box-sizing: border-box;
+  height: var(--card-trim-h);
+  min-height: var(--card-trim-h);
+  padding: var(--card-margin-top) var(--card-margin-x) var(--card-margin-bottom);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 0.28in 0.35in;
   background: linear-gradient(
     165deg,
     var(--card-paper) 0%,
@@ -77,10 +103,40 @@
   );
 }
 
+.calling-card-print__front-stack {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+.calling-card-print__front-gap {
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 0;
+}
+
+.calling-card-print__front-footer {
+  flex-shrink: 0;
+  width: 100%;
+  margin: 0.12in 0 0;
+  font-family: Inter, sans-serif;
+  font-size: 5.5pt;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-muted);
+  line-height: 1.25;
+  text-align: center;
+}
+
+/* L-brackets: screen preview only (not on PDF/print) */
 .calling-card-print__corner-accent {
   position: absolute;
-  width: 0.42in;
-  height: 0.42in;
+  width: 0.38in;
+  height: 0.38in;
   pointer-events: none;
   z-index: 2;
   box-sizing: border-box;
@@ -119,16 +175,19 @@
 }
 
 .calling-card-print__logo {
-  width: 0.72in;
+  width: 0.74in;
   height: auto;
+  max-height: 0.76in;
+  object-fit: contain;
   display: block;
-  margin-bottom: 0.14in;
+  margin-bottom: 0.06in;
+  flex-shrink: 0;
 }
 
 .calling-card-print__name {
   margin: 0;
   font-family: "Playfair Display", serif;
-  font-size: 17pt;
+  font-size: 15.5pt;
   font-weight: 500;
   line-height: 1.15;
   letter-spacing: 0.01em;
@@ -146,9 +205,10 @@
 }
 
 .calling-card-print__rule {
-  width: 1.1in;
+  width: 0.95in;
   height: 1px;
-  margin: 0.16in 0 0.12in;
+  margin: 0.08in 0 0.07in;
+  flex-shrink: 0;
   background: linear-gradient(
     90deg,
     transparent,
@@ -163,25 +223,19 @@
   font-family: Inter, sans-serif;
   font-size: 7pt;
   font-weight: 400;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: var(--card-secondary);
-}
-
-.calling-card-print__tagline--sub {
-  margin-top: 0.1in;
-  font-size: 5.75pt;
-  font-weight: 300;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--card-muted);
 }
 
 /* --- Back --- */
 .calling-card-print__face--back {
+  position: relative;
+  box-sizing: border-box;
+  height: 100%;
+  padding: var(--card-margin-top) var(--card-margin-x) var(--card-margin-bottom);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0.18in 0.2in 0.14in;
   background: linear-gradient(
     145deg,
     var(--card-paper) 0%,
@@ -452,7 +506,8 @@
 
 .calling-card-print__location {
   margin: 0;
-  padding-top: 0.06in;
+  padding-top: 0.05in;
+  flex-shrink: 0;
   border-top: 1px solid rgba(183, 110, 121, 0.2);
   font-family: Inter, sans-serif;
   font-size: 5.75pt;
@@ -518,6 +573,33 @@
     print-color-adjust: exact;
   }
 
+  /* L-brackets are preview-only decoration; cut follows dashed trim outline */
+  .calling-card-print__corner-accent {
+    display: none !important;
+  }
+
+  .calling-card-print__face--front {
+    display: flex !important;
+    flex-direction: column !important;
+    height: var(--card-trim-h) !important;
+    min-height: var(--card-trim-h) !important;
+    border: 1pt dashed var(--card-primary-dark) !important;
+  }
+
+  .calling-card-print__front-gap {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+  }
+
+  .calling-card-print__front-footer {
+    visibility: visible !important;
+    margin-top: 0.12in !important;
+  }
+
+  .calling-card-print__face--back {
+    border: none !important;
+  }
+
   /* Single card: 2 pages at 3.5″ × 2″ */
   html.calling-card-print--single .calling-card-print__print-run--single {
     display: block;
@@ -575,6 +657,8 @@
   }
 
   html.calling-card-print--sheet .calling-card-print__sheet-cell {
+    display: flex;
+    align-items: stretch;
     width: var(--card-trim-w);
     height: var(--card-trim-h);
     overflow: hidden;
@@ -585,6 +669,8 @@
 
   html.calling-card-print--sheet .calling-card-print__face {
     width: 100%;
-    height: 100%;
+    height: var(--card-trim-h);
+    min-height: var(--card-trim-h);
+    flex: 1 1 auto;
   }
 }
