@@ -1,0 +1,590 @@
+/* --- Calling card print canvas (luxury palette aligned with theme.ts) --- */
+.calling-card-print {
+  --card-primary: #b76e79;
+  --card-primary-dark: #8b4a52;
+  --card-secondary: #722f37;
+  --card-bg: #fffaf8;
+  --card-paper: #ffffff;
+  --card-text: #1a1a2e;
+  --card-muted: #5a5a6e;
+  --card-champagne: #f5e6d3;
+  --card-trim-w: 3.5in;
+  --card-trim-h: 2in;
+  --card-bleed: 0.125in;
+}
+
+.calling-card-print__workspace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  padding: 2rem 1rem 3rem;
+}
+
+.calling-card-print__sheet-label {
+  width: 100%;
+  text-align: center;
+  font-family: Inter, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-muted);
+  margin-bottom: -0.75rem;
+}
+
+/* Trim + bleed artboard (screen preview) */
+.calling-card-print__artboard {
+  position: relative;
+  width: calc(var(--card-trim-w) + 2 * var(--card-bleed));
+  height: calc(var(--card-trim-h) + 2 * var(--card-bleed));
+  padding: var(--card-bleed);
+  box-sizing: border-box;
+  margin-bottom: 1.75rem;
+  background: repeating-linear-gradient(
+    45deg,
+    #e8e0dc,
+    #e8e0dc 4px,
+    #f0ebe8 4px,
+    #f0ebe8 8px
+  );
+  border-radius: 2px;
+  box-shadow: 0 12px 40px rgba(26, 26, 46, 0.12);
+}
+
+.calling-card-print__face {
+  position: relative;
+  width: var(--card-trim-w);
+  height: var(--card-trim-h);
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--card-bg);
+  color: var(--card-text);
+}
+
+/* --- Front --- */
+.calling-card-print__face--front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.28in 0.35in;
+  background: linear-gradient(
+    165deg,
+    var(--card-paper) 0%,
+    var(--card-bg) 45%,
+    var(--card-champagne) 100%
+  );
+}
+
+.calling-card-print__corner-accent {
+  position: absolute;
+  width: 0.42in;
+  height: 0.42in;
+  pointer-events: none;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.calling-card-print__corner-accent--tl {
+  top: 0;
+  left: 0;
+  border-top: 1.5px solid var(--card-primary);
+  border-left: 1.5px solid var(--card-primary);
+  opacity: 0.9;
+}
+
+.calling-card-print__corner-accent--tr {
+  top: 0;
+  right: 0;
+  border-top: 1.5px solid var(--card-primary);
+  border-right: 1.5px solid var(--card-primary);
+  opacity: 0.9;
+}
+
+.calling-card-print__corner-accent--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1.5px solid var(--card-primary);
+  border-left: 1.5px solid var(--card-primary);
+  opacity: 0.9;
+}
+
+.calling-card-print__corner-accent--br {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid var(--card-primary);
+  border-right: 1.5px solid var(--card-primary);
+  opacity: 0.9;
+}
+
+.calling-card-print__logo {
+  width: 0.72in;
+  height: auto;
+  display: block;
+  margin-bottom: 0.14in;
+}
+
+.calling-card-print__name {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 17pt;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: var(--card-text);
+}
+
+.calling-card-print__subtitle {
+  margin: 0.08in 0 0;
+  font-family: Inter, sans-serif;
+  font-size: 6.5pt;
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  text-indent: 0.38em;
+  color: var(--card-primary-dark);
+}
+
+.calling-card-print__rule {
+  width: 1.1in;
+  height: 1px;
+  margin: 0.16in 0 0.12in;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--card-primary) 20%,
+    var(--card-primary) 80%,
+    transparent
+  );
+}
+
+.calling-card-print__tagline {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 7pt;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--card-secondary);
+}
+
+.calling-card-print__tagline--sub {
+  margin-top: 0.1in;
+  font-size: 5.75pt;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--card-muted);
+}
+
+/* --- Back --- */
+.calling-card-print__face--back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.18in 0.2in 0.14in;
+  background: linear-gradient(
+    145deg,
+    var(--card-paper) 0%,
+    var(--card-bg) 70%,
+    rgba(245, 230, 211, 0.45) 100%
+  );
+}
+
+.calling-card-print__back-bands {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.07in;
+  min-height: 0;
+  padding: 0.02in 0 0;
+}
+
+.calling-card-print__back-band--contact {
+  padding: 0 0.02in;
+}
+
+.calling-card-print__back-divider {
+  height: 1px;
+  margin: 0.02in 0.08in;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(183, 110, 121, 0.35) 25%,
+    rgba(183, 110, 121, 0.35) 75%,
+    transparent
+  );
+}
+
+.calling-card-print__back-band--social {
+  text-align: center;
+}
+
+.calling-card-print__social-line {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 6pt;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--card-muted);
+}
+
+.calling-card-print__back-band--qr {
+  padding-top: 0.02in;
+}
+
+.calling-card-print__contact-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.055in;
+  font-family: Inter, sans-serif;
+}
+
+.calling-card-print__contact-block--duo {
+  flex: none;
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 0.12in;
+  align-items: start;
+}
+
+.calling-card-print__contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.015in;
+}
+
+.calling-card-print__contact-label {
+  font-size: 5pt;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--card-primary);
+}
+
+.calling-card-print__contact-value {
+  font-size: 7.25pt;
+  font-weight: 400;
+  color: var(--card-text);
+  line-height: 1.25;
+}
+
+.calling-card-print__contact-value--email {
+  font-size: 6.5pt;
+  word-break: break-all;
+  line-height: 1.2;
+}
+
+.calling-card-print__contact-value--emphasis {
+  font-weight: 500;
+  color: var(--card-secondary);
+  font-size: 7pt;
+}
+
+.calling-card-print__social-note {
+  margin: 0.02in 0 0;
+  font-family: Inter, sans-serif;
+  font-size: 5.75pt;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: var(--card-muted);
+}
+
+.calling-card-print__qr-row {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.07in;
+}
+
+.calling-card-print__qr-row--dual {
+  width: 100%;
+  justify-content: center;
+  gap: 0.22in;
+}
+
+.calling-card-print__qr-row--trio {
+  width: 100%;
+  justify-content: center;
+  gap: 0.08in;
+}
+
+.calling-card-print__qr-panel {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.035in;
+  width: 0.95in;
+}
+
+.calling-card-print__qr-panel--compact {
+  width: 0.78in;
+  gap: 0.03in;
+}
+
+.calling-card-print__qr-panel--dual {
+  gap: 0.04in;
+  width: auto;
+}
+
+.calling-card-print__qr-panel--trio {
+  flex: 1;
+  max-width: 0.95in;
+  gap: 0.03in;
+}
+
+.calling-card-print__qr-panel--trio .calling-card-print__qr-label {
+  font-size: 4.75pt;
+  letter-spacing: 0.12em;
+}
+
+.calling-card-print__qr-label {
+  font-family: Inter, sans-serif;
+  font-size: 5pt;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--card-primary);
+}
+
+.calling-card-print__qr-frame {
+  padding: 0.05in;
+  background: var(--card-paper);
+  border: 1px solid rgba(183, 110, 121, 0.28);
+  box-shadow: 0 0 0 1px rgba(245, 230, 211, 0.9) inset;
+  line-height: 0;
+}
+
+.calling-card-print__qr-frame--soft {
+  padding: 0.055in;
+  background: rgba(245, 230, 211, 0.35);
+  border: 1px solid rgba(183, 110, 121, 0.2);
+  box-shadow: none;
+  border-radius: 2px;
+}
+
+.calling-card-print__qr-svg {
+  display: block;
+  width: 0.58in !important;
+  height: 0.58in !important;
+}
+
+.calling-card-print__qr-svg--compact {
+  width: 0.46in !important;
+  height: 0.46in !important;
+}
+
+.calling-card-print__qr-svg--dual {
+  width: 0.56in !important;
+  height: 0.56in !important;
+}
+
+.calling-card-print__qr-svg--standalone {
+  width: 200px !important;
+  height: 200px !important;
+}
+
+.calling-card-print__qr-handle {
+  font-family: Inter, sans-serif;
+  font-size: 5.5pt;
+  font-weight: 500;
+  color: var(--card-secondary);
+  letter-spacing: 0.02em;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.calling-card-print__qr-handle--compact {
+  font-size: 4.75pt;
+  font-weight: 400;
+  color: var(--card-text);
+  max-width: 0.98in;
+  word-break: break-all;
+}
+
+.calling-card-print__qr-panel--trio .calling-card-print__qr-handle--compact {
+  font-size: 4.25pt;
+}
+
+.calling-card-print__scan-hint {
+  margin: 0.04in 0 0;
+  font-family: Inter, sans-serif;
+  font-size: 5.25pt;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--card-primary-dark);
+}
+
+.calling-card-print__standalone-qr {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: var(--card-paper);
+  border: 1px solid rgba(183, 110, 121, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(245, 230, 211, 0.95) inset,
+    0 16px 48px rgba(26, 26, 46, 0.08);
+  border-radius: 4px;
+}
+
+.calling-card-print__standalone-frame {
+  padding: 0.75rem;
+  background: #ffffff;
+  border: 1px solid rgba(183, 110, 121, 0.2);
+  line-height: 0;
+}
+
+.calling-card-print__standalone-url {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--card-text);
+}
+
+.calling-card-print__location {
+  margin: 0;
+  padding-top: 0.06in;
+  border-top: 1px solid rgba(183, 110, 121, 0.2);
+  font-family: Inter, sans-serif;
+  font-size: 5.75pt;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--card-muted);
+}
+
+.calling-card-print__print-run {
+  display: none;
+}
+
+.calling-card-print__trim-page {
+  width: var(--card-trim-w);
+  height: var(--card-trim-h);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.calling-card-print__sheet-page {
+  display: none;
+}
+
+/* --- Print output --- */
+@media print {
+  @page {
+    size: letter;
+    /* Extra top margin — many home printers clip the first row */
+    margin: 0.45in 0.3in 0.35in 0.3in;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .calling-card-print,
+  .calling-card-print * {
+    visibility: visible;
+  }
+
+  .calling-card-print__screen-only,
+  .calling-card-print__workspace--preview {
+    display: none !important;
+  }
+
+  .calling-card-print {
+    position: static;
+    width: auto;
+    height: auto;
+  }
+
+  .calling-card-print__face {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Single card: 2 pages at 3.5″ × 2″ */
+  html.calling-card-print--single .calling-card-print__print-run--single {
+    display: block;
+  }
+
+  html.calling-card-print--single .calling-card-print__print-run--sheet {
+    display: none !important;
+  }
+
+  html.calling-card-print--single .calling-card-print__trim-page {
+    width: var(--card-trim-w);
+    height: var(--card-trim-h);
+    margin: 0 auto;
+    page-break-after: always;
+    break-after: page;
+    overflow: hidden;
+  }
+
+  html.calling-card-print--single .calling-card-print__trim-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  html.calling-card-print--single .calling-card-print__face {
+    width: var(--card-trim-w);
+    height: var(--card-trim-h);
+  }
+
+  /* Sheet: US Letter, 2 columns × 4 rows (8 cards) — fits printer safe area */
+  html.calling-card-print--sheet .calling-card-print__print-run--sheet {
+    display: block;
+  }
+
+  html.calling-card-print--sheet .calling-card-print__print-run--single {
+    display: none !important;
+  }
+
+  html.calling-card-print--sheet .calling-card-print__sheet-page {
+    display: grid;
+    grid-template-columns: repeat(2, var(--card-trim-w));
+    grid-template-rows: repeat(4, var(--card-trim-h));
+    gap: 0.07in;
+    justify-content: center;
+    align-content: center;
+    min-height: 10in;
+    page-break-after: always;
+    break-after: page;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  html.calling-card-print--sheet .calling-card-print__sheet-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  html.calling-card-print--sheet .calling-card-print__sheet-cell {
+    width: var(--card-trim-w);
+    height: var(--card-trim-h);
+    overflow: hidden;
+    box-sizing: border-box;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  html.calling-card-print--sheet .calling-card-print__face {
+    width: 100%;
+    height: 100%;
+  }
+}

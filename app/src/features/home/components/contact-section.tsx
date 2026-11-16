@@ -34,6 +34,7 @@ import {
   readSubmitTimestamps,
   recordSubmit,
 } from "../lib/contact-spam-guard";
+import { BUSINESS_PROFILE } from "@/shared/business-profile";
 
 interface ContactInfoItem {
   icon: typeof EmailIcon;
@@ -46,27 +47,24 @@ const CONTACT_INFO: ContactInfoItem[] = [
   {
     icon: EmailIcon,
     label: "Email",
-    value: "rhodacordova.mua@gmail.com",
-    href: "mailto:rhodacordova.mua@gmail.com",
+    value: BUSINESS_PROFILE.email,
+    href: `mailto:${BUSINESS_PROFILE.email}`,
   },
   {
     icon: PhoneIcon,
     label: "Phone",
-    value: "+63 927 402 8885",
-    href: "tel:+639274028885",
+    value: BUSINESS_PROFILE.phoneDisplay,
+    href: `tel:${BUSINESS_PROFILE.phoneTel}`,
   },
   {
     icon: LocationOnIcon,
     label: "Location",
-    value: "Metro Manila / Cavite / Laguna",
+    value: BUSINESS_PROFILE.location.split(" · ").join(" / "),
   },
 ];
 
-/** Replace these URLs when live Instagram / Facebook pages are ready. */
-const SOCIAL_LINKS = {
-  instagram: "https://instagram.com/YOUR_HANDLE",
-  facebook: "https://facebook.com/YOUR_PAGE",
-};
+const INSTAGRAM_URL = BUSINESS_PROFILE.instagramUrl;
+const FACEBOOK_URL = BUSINESS_PROFILE.facebookUrl;
 
 /** Contact section with form, MagicUI BorderBeam, and studio information. */
 function ContactSection(): React.JSX.Element {
@@ -516,7 +514,7 @@ function ContactSection(): React.JSX.Element {
                   </Typography>
                   <Stack direction="row" spacing={1}>
                     <IconButton
-                      href={SOCIAL_LINKS.instagram}
+                      href={INSTAGRAM_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Instagram"
@@ -531,7 +529,7 @@ function ContactSection(): React.JSX.Element {
                       <InstagramIcon />
                     </IconButton>
                     <IconButton
-                      href={SOCIAL_LINKS.facebook}
+                      href={FACEBOOK_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"

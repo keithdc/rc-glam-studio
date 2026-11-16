@@ -18,6 +18,9 @@ const HomePage = lazy(() => import("./features/home/pages/home-page"));
 const PortfolioPage = lazy(
   () => import("./features/portfolio/pages/portfolio-page"),
 );
+const CallingCardPage = lazy(
+  () => import("./features/calling-card/pages/calling-card-page"),
+);
 
 /** Loading fallback for lazy routes. */
 function PageLoader(): React.JSX.Element {
@@ -48,6 +51,7 @@ function AppContent(): React.JSX.Element {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/calling-card" element={<CallingCardPage />} />
           </Routes>
         </Suspense>
       </BrowserRouter>
